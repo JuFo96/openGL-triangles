@@ -34,7 +34,6 @@ add_executable(hello_triangle
 # Add include directories
 target_include_directories(hello_triangle PRIVATE
     external/glad/include
-    external/glfw-3.4/include
 )
 
 # Link libraries
