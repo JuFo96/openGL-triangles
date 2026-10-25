@@ -5,6 +5,7 @@
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void process_input(GLFWwindow *window);
+void refresh(GLFWwindow *window);
 
 const char *vertexShaderSource =
     "#version 330 core\n"
@@ -19,7 +20,7 @@ const char *fragmentShaderSource =
     "out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+    "   FragColor = vec4(1.0f, 0.9f, 0.2f, 1.0f);\n"
     "}\n\0";
 
 int main() {
@@ -60,7 +61,7 @@ int main() {
   };
 
   unsigned int indices[] = {
-      0, 1, 2, // first triangle
+//      0, 1, 2, // first triangle
       1, 2, 3  // second triangle
   };
 
@@ -70,7 +71,8 @@ int main() {
   glBindBuffer(GL_ARRAY_BUFFER, VertexBufferObject);
   // Sends data to GPU, GL_STATIC_DRAW implies data is set once and drawn many
   // times
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices),
+               vertices, GL_STATIC_DRAW);
 
   // Error data for shader compilers
   int success;
@@ -121,9 +123,17 @@ int main() {
 
   glBindVertexArray(vertexArrayObject);
   glBindBuffer(GL_ARRAY_BUFFER, VertexBufferObject);
+  //glBufferData(GL_ARRAY_BUFFER, sizeof(doubleTriangleVertices),
+   //            doubleTriangleVertices, GL_STATIC_DRAW);
 
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
   glEnableVertexAttribArray(0);
+
+  unsigned int elementBufferObject;
+  glGenBuffers(1, &elementBufferObject);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferObject);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
+               GL_STATIC_DRAW);
 
   // Render Loop
   while (!glfwWindowShouldClose(window)) {
@@ -133,16 +143,27 @@ int main() {
     // Rendering
     glClearColor(0.2f, 0.3, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     glUseProgram(shaderProgram);
     glBindVertexArray(vertexArrayObject);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    //    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
     glfwPollEvents();
     glfwSwapBuffers(window);
+    refresh(window);
+
+    //    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices,
+    //    GL_STATIC_DRAW);
   }
 
   return 0;
+}
+
+void refresh(GLFWwindow *window) {
+  if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+    return;
 }
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
